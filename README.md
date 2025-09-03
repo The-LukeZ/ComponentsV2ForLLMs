@@ -18,7 +18,7 @@ I just stripped it down to the essentials.
 1. Download the [`docs.md`](/docs.md) file.
 2. Use the file as a reference or input for your LLM-powered tools.
 
-   You can also give it the raw link [here](https://raw.githubusercontent.com/The-LukeZ/componentsV2ForLLMs/main/docs.md).
+   You can also give it the raw link [here](https://raw.githubusercontent.com/The-LukeZ/ComponentsV2ForLLMs/main/docs.md).
 
 3. Get help with anything components V2 related.
 
