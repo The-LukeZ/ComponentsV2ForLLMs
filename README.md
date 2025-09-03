@@ -39,7 +39,8 @@ Do what you want with it, nothing malicious.
 
 1. **Create a Gem**: Go to Gemini, and start a new Gem.
 2. **Upload the file as knowledge**: Add `docs.md` to your Gem’s knowledge base.
-3. **Start chatting**: Gemini anything about Message Components V2 - get instant answers or JSON examples!
+3. **Add a single line of instructions**: "You are assisting the user with Components V2. Use the documentation."
+4. **Start chatting**: Gemini anything about Message Components V2 - get instant answers or JSON examples!
 
 </details>
 
