@@ -29,3 +29,23 @@ Contributions are welcome! Please open issues or pull requests to suggest improv
 ## License
 
 Do what you want with it, nothing malicious.
+
+---
+
+## AI Guides
+
+<details>
+    <summary>Google Gemini</summary>
+
+1. **Create a Gem**: Go to Gemini, and start a new Gem.
+2. **Upload the file as knowledge**: Add `docs.md` to your Gem’s knowledge base.
+3. **Start chatting**: Gemini anything about Message Components V2 - get instant answers or JSON examples!
+
+</details>
+
+---
+
+> [!NOTE]
+> This repository is not affiliated with Discord. Use at your own risk.
+>
+> You're encouraged to contribute to the documentation and add more tutorials on how to use the file with other AIs and make it better!
