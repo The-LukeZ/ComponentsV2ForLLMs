@@ -30,7 +30,7 @@ Contributions are welcome! Please open issues or pull requests to suggest improv
 
 ## License
 
-Do what you want with it, nothing malicious.
+MIT - see [LICENSE](LICENSE) for details. Do whatever you want with the code, but don't blame me if it breaks something.
 
 ---
 
