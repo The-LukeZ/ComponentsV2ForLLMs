@@ -7,6 +7,7 @@ Since 2025, message components got a lot more powerful, allowing for more intera
 To use the new layout and content components (Section, Text Display, Thumbnail, Media Gallery, File, Separator, Container), send the message flag `1 << 15` (`32768`) as `flags` in your message payload. Once set on a message, this flag cannot be removed.
 
 When `IS_COMPONENTS_V2` is active:
+
 - `content` and `embeds` fields are disabled — use Text Display and Container instead
 - Attachments must be exposed through components
 - `poll` and `stickers` are disabled
@@ -47,17 +48,17 @@ When `IS_COMPONENTS_V2` is active:
 
 All components share these base fields:
 
-| Field | Type    | Description                          |
-| ----- | ------- | ------------------------------------ |
-| type  | integer | The type of the component            |
+| Field | Type    | Description                                                                                                          |
+| ----- | ------- | -------------------------------------------------------------------------------------------------------------------- |
+| type  | integer | The type of the component                                                                                            |
 | id?   | integer | Optional 32-bit identifier; auto-generated sequentially if omitted. `0` is treated as empty and replaced by the API. |
 
 ### Custom ID
 
 Interactive components (buttons, selects, text inputs, etc.) must have a `custom_id`. It is returned in the interaction payload when a user interacts with the component.
 
-| Field     | Type   | Description                                          |
-| --------- | ------ | ---------------------------------------------------- |
+| Field     | Type   | Description                                                        |
+| --------- | ------ | ------------------------------------------------------------------ |
 | custom_id | string | Developer-defined identifier; 1–100 characters, unique per message |
 
 ---
@@ -67,6 +68,7 @@ Interactive components (buttons, selects, text inputs, etc.) must have a `custom
 A top-level layout component containing interactive components.
 
 Can contain **one** of:
+
 - Up to 5 [Buttons](#button)
 - A single select component (String, User, Role, Mentionable, or Channel Select)
 
@@ -74,11 +76,11 @@ Can contain **one** of:
 
 #### Action Row Structure
 
-| Field      | Type    | Description                                                              |
-| ---------- | ------- | ------------------------------------------------------------------------ |
-| type       | integer | `1` for action row                                                       |
-| id?        | integer | Optional identifier                                                      |
-| components | array   | Up to 5 Buttons, or a single select component                            |
+| Field      | Type    | Description                                   |
+| ---------- | ------- | --------------------------------------------- |
+| type       | integer | `1` for action row                            |
+| id?        | integer | Optional identifier                           |
+| components | array   | Up to 5 Buttons, or a single select component |
 
 #### Example
 
@@ -90,7 +92,12 @@ Can contain **one** of:
       "type": 1,
       "components": [
         { "type": 2, "custom_id": "click_yes", "label": "Accept", "style": 1 },
-        { "type": 2, "label": "Learn More", "style": 5, "url": "https://example.com/" },
+        {
+          "type": 2,
+          "label": "Learn More",
+          "style": 5,
+          "url": "https://example.com/"
+        },
         { "type": 2, "custom_id": "click_no", "label": "Decline", "style": 4 }
       ]
     }
@@ -106,30 +113,31 @@ An interactive component. Must be inside an [Action Row](#action-row) or a [Sect
 
 #### Button Structure
 
-| Field     | Type          | Description                                                                |
-| --------- | ------------- | -------------------------------------------------------------------------- |
-| type      | integer       | `2` for a button                                                           |
-| id?       | integer       | Optional identifier                                                        |
-| style     | integer       | A [button style](#button-styles)                                           |
-| label?    | string        | Button text; max 80 characters                                             |
-| emoji?    | partial emoji | `name`, `id`, and `animated`                                               |
-| custom_id | string        | Required for non-link, non-premium buttons; 1–100 characters               |
-| sku_id?   | snowflake     | Required for premium buttons                                               |
-| url?      | string        | Required for link buttons; max 512 characters                              |
-| disabled? | boolean       | Defaults to `false`                                                        |
+| Field     | Type          | Description                                                  |
+| --------- | ------------- | ------------------------------------------------------------ |
+| type      | integer       | `2` for a button                                             |
+| id?       | integer       | Optional identifier                                          |
+| style     | integer       | A [button style](#button-styles)                             |
+| label?    | string        | Button text; max 80 characters                               |
+| emoji?    | partial emoji | `name`, `id`, and `animated`                                 |
+| custom_id | string        | Required for non-link, non-premium buttons; 1–100 characters |
+| sku_id?   | snowflake     | Required for premium buttons                                 |
+| url?      | string        | Required for link buttons; max 512 characters                |
+| disabled? | boolean       | Defaults to `false`                                          |
 
 #### Button Styles
 
-| Name      | Value | Action                                          | Required Field |
-| --------- | ----- | ----------------------------------------------- | -------------- |
-| Primary   | 1     | Most important or recommended action            | `custom_id`    |
-| Secondary | 2     | Alternative or supporting actions               | `custom_id`    |
-| Success   | 3     | Positive confirmation or completion             | `custom_id`    |
-| Danger    | 4     | Irreversible consequences                       | `custom_id`    |
-| Link      | 5     | Navigates to a URL; no interaction sent         | `url`          |
-| Premium   | 6     | Purchase; no interaction sent; auto-shows shop icon, SKU name and price | `sku_id` |
+| Name      | Value | Action                                                                  | Required Field |
+| --------- | ----- | ----------------------------------------------------------------------- | -------------- |
+| Primary   | 1     | Most important or recommended action                                    | `custom_id`    |
+| Secondary | 2     | Alternative or supporting actions                                       | `custom_id`    |
+| Success   | 3     | Positive confirmation or completion                                     | `custom_id`    |
+| Danger    | 4     | Irreversible consequences                                               | `custom_id`    |
+| Link      | 5     | Navigates to a URL; no interaction sent                                 | `url`          |
+| Premium   | 6     | Purchase; no interaction sent; auto-shows shop icon, SKU name and price | `sku_id`       |
 
 Rules:
+
 - Non-link, non-premium buttons: must have `custom_id`; cannot have `url` or `sku_id`
 - Link buttons: must have `url`; cannot have `custom_id`
 - Premium buttons: must have `sku_id`; cannot have `custom_id`, `label`, `url`, or `emoji`
@@ -158,41 +166,41 @@ Allows users to select one or more from defined options. Must be inside an [Acti
 
 #### String Select Structure
 
-| Field        | Type    | Description                                                                            |
-| ------------ | ------- | -------------------------------------------------------------------------------------- |
-| type         | integer | `3` for string select                                                                  |
-| id?          | integer | Optional identifier                                                                    |
-| custom_id    | string  | 1–100 characters                                                                       |
-| options      | array   | Up to 25 [select options](#string-select-option-structure)                             |
-| placeholder? | string  | Placeholder text; max 150 characters                                                   |
-| min_values?  | integer | Min items to choose; min 0, max 25; defaults to 1. Must be ≥1 if `required` is true.  |
-| max_values?  | integer | Max items to choose; max 25; defaults to 1                                             |
-| required?\*  | boolean | Modal only — whether the field is required (defaults to `true`)                        |
-| disabled?\*\*| boolean | Message only — whether disabled (defaults to `false`)                                  |
+| Field         | Type    | Description                                                                          |
+| ------------- | ------- | ------------------------------------------------------------------------------------ |
+| type          | integer | `3` for string select                                                                |
+| id?           | integer | Optional identifier                                                                  |
+| custom_id     | string  | 1–100 characters                                                                     |
+| options       | array   | Up to 25 [select options](#string-select-option-structure)                           |
+| placeholder?  | string  | Placeholder text; max 150 characters                                                 |
+| min_values?   | integer | Min items to choose; min 0, max 25; defaults to 1. Must be ≥1 if `required` is true. |
+| max_values?   | integer | Max items to choose; max 25; defaults to 1                                           |
+| required?\*   | boolean | Modal only — whether the field is required (defaults to `true`)                      |
+| disabled?\*\* | boolean | Message only — whether disabled (defaults to `false`)                                |
 
 \* `required` is ignored in messages. \*\* `disabled` causes an error in modals.
 
 #### String Select Option Structure
 
-| Field        | Type          | Description                                              |
-| ------------ | ------------- | -------------------------------------------------------- |
-| label        | string        | User-facing name; max 100 characters                     |
-| value        | string        | Dev-defined value; max 100 characters                    |
-| description? | string        | Additional description; max 100 characters               |
-| emoji?       | partial emoji | `id`, `name`, and `animated`                             |
-| default?     | boolean       | Shows option as selected by default                      |
+| Field        | Type          | Description                                |
+| ------------ | ------------- | ------------------------------------------ |
+| label        | string        | User-facing name; max 100 characters       |
+| value        | string        | Dev-defined value; max 100 characters      |
+| description? | string        | Additional description; max 100 characters |
+| emoji?       | partial emoji | `id`, `name`, and `animated`               |
+| default?     | boolean       | Shows option as selected by default        |
 
 The number of options must be within the range of `min_values` and `max_values`.
 
 #### Interaction Response Structure
 
-| Field         | Type             | Description                          |
-| ------------- | ---------------- | ------------------------------------ |
-| type\*        | integer          | `3`                                  |
-| component_type\* | integer       | `3`                                  |
-| id            | integer          | Unique identifier for the component  |
-| custom_id     | string           | Developer-defined identifier         |
-| values        | array of strings | The values of the selected options   |
+| Field            | Type             | Description                         |
+| ---------------- | ---------------- | ----------------------------------- |
+| type\*           | integer          | `3`                                 |
+| component_type\* | integer          | `3`                                 |
+| id               | integer          | Unique identifier for the component |
+| custom_id        | string           | Developer-defined identifier        |
+| values           | array of strings | The values of the selected options  |
 
 \* `component_type` returned in message interactions; `type` in modal interactions.
 
@@ -212,9 +220,22 @@ The number of options must be within the range of `min_values` and `max_values`.
           "custom_id": "favorite_bug",
           "placeholder": "Favorite bug?",
           "options": [
-            { "label": "Ant", "value": "ant", "description": "(best option)", "emoji": { "name": "🐜" } },
-            { "label": "Butterfly", "value": "butterfly", "emoji": { "name": "🦋" } },
-            { "label": "Caterpillar", "value": "caterpillar", "emoji": { "name": "🐛" } }
+            {
+              "label": "Ant",
+              "value": "ant",
+              "description": "(best option)",
+              "emoji": { "name": "🐜" }
+            },
+            {
+              "label": "Butterfly",
+              "value": "butterfly",
+              "emoji": { "name": "🦋" }
+            },
+            {
+              "label": "Caterpillar",
+              "value": "caterpillar",
+              "emoji": { "name": "🐛" }
+            }
           ]
         }
       ]
@@ -233,26 +254,26 @@ Allows users to enter free-form text. Modal only. Must be inside a [Label](#labe
 
 #### Text Input Structure
 
-| Field        | Type    | Description                                        |
-| ------------ | ------- | -------------------------------------------------- |
-| type         | integer | `4` for text input                                 |
-| id?          | integer | Optional identifier                                |
-| custom_id    | string  | 1–100 characters                                   |
+| Field        | Type    | Description                                             |
+| ------------ | ------- | ------------------------------------------------------- |
+| type         | integer | `4` for text input                                      |
+| id?          | integer | Optional identifier                                     |
+| custom_id    | string  | 1–100 characters                                        |
 | style        | integer | `1` = Short (single-line), `2` = Paragraph (multi-line) |
-| min_length?  | integer | Minimum input length; min 0, max 4000              |
-| max_length?  | integer | Maximum input length; min 1, max 4000              |
-| required?    | boolean | Defaults to `true`                                 |
-| value?       | string  | Pre-filled value; max 4000 characters              |
-| placeholder? | string  | Placeholder text if empty; max 100 characters      |
+| min_length?  | integer | Minimum input length; min 0, max 4000                   |
+| max_length?  | integer | Maximum input length; min 1, max 4000                   |
+| required?    | boolean | Defaults to `true`                                      |
+| value?       | string  | Pre-filled value; max 4000 characters                   |
+| placeholder? | string  | Placeholder text if empty; max 100 characters           |
 
 #### Interaction Response Structure
 
 | Field     | Type    | Description                  |
 | --------- | ------- | ---------------------------- |
 | type      | integer | `4`                          |
-| id        | integer | Unique identifier             |
-| custom_id | string  | Developer-defined identifier  |
-| value     | string  | The user's input text         |
+| id        | integer | Unique identifier            |
+| custom_id | string  | Developer-defined identifier |
+| value     | string  | The user's input text        |
 
 #### Example
 
@@ -290,37 +311,37 @@ Allows users to select one or more server members. Must be inside an [Action Row
 
 #### User Select Structure
 
-| Field           | Type    | Description                                                                                  |
-| --------------- | ------- | -------------------------------------------------------------------------------------------- |
-| type            | integer | `5` for user select                                                                          |
-| id?             | integer | Optional identifier                                                                          |
-| custom_id       | string  | 1–100 characters                                                                             |
-| placeholder?    | string  | Max 150 characters                                                                           |
-| default_values? | array   | Array of [default value objects](#select-default-value-structure)                            |
-| min_values?     | integer | Min items to choose; min 0, max 25; defaults to 1. Must be ≥1 if `required` is true.        |
-| max_values?     | integer | Max items to choose; max 25; defaults to 1                                                   |
-| required?\*     | boolean | Modal only — defaults to `true`                                                              |
-| disabled?\*\*   | boolean | Message only — defaults to `false`                                                           |
+| Field           | Type    | Description                                                                          |
+| --------------- | ------- | ------------------------------------------------------------------------------------ |
+| type            | integer | `5` for user select                                                                  |
+| id?             | integer | Optional identifier                                                                  |
+| custom_id       | string  | 1–100 characters                                                                     |
+| placeholder?    | string  | Max 150 characters                                                                   |
+| default_values? | array   | Array of [default value objects](#select-default-value-structure)                    |
+| min_values?     | integer | Min items to choose; min 0, max 25; defaults to 1. Must be ≥1 if `required` is true. |
+| max_values?     | integer | Max items to choose; max 25; defaults to 1                                           |
+| required?\*     | boolean | Modal only — defaults to `true`                                                      |
+| disabled?\*\*   | boolean | Message only — defaults to `false`                                                   |
 
 \* `required` is ignored in messages. \*\* `disabled` causes an error in modals.
 
 #### Select Default Value Structure
 
-| Field | Type      | Description                                                    |
-| ----- | --------- | -------------------------------------------------------------- |
-| id    | snowflake | ID of a user, role, or channel                                 |
-| type  | string    | `"user"`, `"role"`, or `"channel"`                             |
+| Field | Type      | Description                        |
+| ----- | --------- | ---------------------------------- |
+| id    | snowflake | ID of a user, role, or channel     |
+| type  | string    | `"user"`, `"role"`, or `"channel"` |
 
 #### Interaction Response Structure
 
-| Field            | Type                | Description                              |
-| ---------------- | ------------------- | ---------------------------------------- |
-| type\*           | integer             | `5`                                      |
-| component_type\* | integer             | `5`                                      |
-| id               | integer             | Unique identifier                        |
-| custom_id        | string              | Developer-defined identifier             |
-| resolved         | resolved data object| Resolved user/member entities            |
-| values           | array of snowflakes | IDs of selected users                    |
+| Field            | Type                 | Description                   |
+| ---------------- | -------------------- | ----------------------------- |
+| type\*           | integer              | `5`                           |
+| component_type\* | integer              | `5`                           |
+| id               | integer              | Unique identifier             |
+| custom_id        | string               | Developer-defined identifier  |
+| resolved         | resolved data object | Resolved user/member entities |
+| values           | array of snowflakes  | IDs of selected users         |
 
 \* `component_type` in message interactions; `type` in modal interactions.
 
@@ -333,7 +354,11 @@ Allows users to select one or more server members. Must be inside an [Action Row
     {
       "type": 1,
       "components": [
-        { "type": 5, "custom_id": "user_select", "placeholder": "Select a user" }
+        {
+          "type": 5,
+          "custom_id": "user_select",
+          "placeholder": "Select a user"
+        }
       ]
     }
   ]
@@ -382,7 +407,11 @@ Same as User Select but type `6`; `values` contains role snowflakes; `resolved` 
     {
       "type": 1,
       "components": [
-        { "type": 6, "custom_id": "role_select", "placeholder": "Select a role" }
+        {
+          "type": 6,
+          "custom_id": "role_select",
+          "placeholder": "Select a role"
+        }
       ]
     }
   ]
@@ -433,38 +462,38 @@ Allows users to select one or more channels. Type `8`. Can be filtered by channe
 
 #### Channel Select Structure
 
-| Field           | Type    | Description                                                                           |
-| --------------- | ------- | ------------------------------------------------------------------------------------- |
-| type            | integer | `8` for channel select                                                                |
-| id?             | integer | Optional identifier                                                                   |
-| custom_id       | string  | 1–100 characters                                                                      |
-| channel_types?  | array   | List of [channel types](#channel-types) to include                                    |
-| placeholder?    | string  | Max 150 characters                                                                    |
-| default_values? | array   | Array of [default value objects](#select-default-value-structure) (type `"channel"`)  |
+| Field           | Type    | Description                                                                          |
+| --------------- | ------- | ------------------------------------------------------------------------------------ |
+| type            | integer | `8` for channel select                                                               |
+| id?             | integer | Optional identifier                                                                  |
+| custom_id       | string  | 1–100 characters                                                                     |
+| channel_types?  | array   | List of [channel types](#channel-types) to include                                   |
+| placeholder?    | string  | Max 150 characters                                                                   |
+| default_values? | array   | Array of [default value objects](#select-default-value-structure) (type `"channel"`) |
 | min_values?     | integer | Min items to choose; min 0, max 25; defaults to 1. Must be ≥1 if `required` is true. |
-| max_values?     | integer | Max items to choose; max 25; defaults to 1                                            |
-| required?\*     | boolean | Modal only — defaults to `true`                                                       |
-| disabled?\*\*   | boolean | Message only — defaults to `false`                                                    |
+| max_values?     | integer | Max items to choose; max 25; defaults to 1                                           |
+| required?\*     | boolean | Modal only — defaults to `true`                                                      |
+| disabled?\*\*   | boolean | Message only — defaults to `false`                                                   |
 
 \* `required` is ignored in messages. \*\* `disabled` causes an error in modals.
 
 #### Channel Types
 
-| Name                | Value | Description                                                |
-| ------------------- | ----- | ---------------------------------------------------------- |
-| GUILD_TEXT          | 0     | Text channel within a server                               |
-| DM                  | 1     | Direct message between users                               |
-| GUILD_VOICE         | 2     | Voice channel within a server                              |
-| GROUP_DM            | 3     | Direct message between multiple users                      |
-| GUILD_CATEGORY      | 4     | Organizational category containing up to 50 channels      |
-| GUILD_ANNOUNCEMENT  | 5     | Announcement channel (formerly news)                       |
-| ANNOUNCEMENT_THREAD | 10    | Thread within a GUILD_ANNOUNCEMENT channel                 |
-| PUBLIC_THREAD       | 11    | Thread within a GUILD_TEXT or GUILD_FORUM channel          |
-| PRIVATE_THREAD      | 12    | Private thread within a GUILD_TEXT channel                 |
-| GUILD_STAGE_VOICE   | 13    | Stage channel for events with an audience                  |
-| GUILD_DIRECTORY     | 14    | Hub directory channel                                      |
-| GUILD_FORUM         | 15    | Channel that can only contain threads                      |
-| GUILD_MEDIA         | 16    | Media channel that can only contain threads                |
+| Name                | Value | Description                                          |
+| ------------------- | ----- | ---------------------------------------------------- |
+| GUILD_TEXT          | 0     | Text channel within a server                         |
+| DM                  | 1     | Direct message between users                         |
+| GUILD_VOICE         | 2     | Voice channel within a server                        |
+| GROUP_DM            | 3     | Direct message between multiple users                |
+| GUILD_CATEGORY      | 4     | Organizational category containing up to 50 channels |
+| GUILD_ANNOUNCEMENT  | 5     | Announcement channel (formerly news)                 |
+| ANNOUNCEMENT_THREAD | 10    | Thread within a GUILD_ANNOUNCEMENT channel           |
+| PUBLIC_THREAD       | 11    | Thread within a GUILD_TEXT or GUILD_FORUM channel    |
+| PRIVATE_THREAD      | 12    | Private thread within a GUILD_TEXT channel           |
+| GUILD_STAGE_VOICE   | 13    | Stage channel for events with an audience            |
+| GUILD_DIRECTORY     | 14    | Hub directory channel                                |
+| GUILD_FORUM         | 15    | Channel that can only contain threads                |
+| GUILD_MEDIA         | 16    | Media channel that can only contain threads          |
 
 #### Interaction Response Structure
 
@@ -499,12 +528,12 @@ A top-level layout component (message only, requires IS_COMPONENTS_V2) that asso
 
 #### Section Structure
 
-| Field      | Type    | Description                                                              |
-| ---------- | ------- | ------------------------------------------------------------------------ |
-| type       | integer | `9` for section                                                          |
-| id?        | integer | Optional identifier                                                      |
-| components | array   | 1–3 [Text Display](#text-display) components                             |
-| accessory  | object  | A [Button](#button) or [Thumbnail](#thumbnail)                           |
+| Field      | Type    | Description                                    |
+| ---------- | ------- | ---------------------------------------------- |
+| type       | integer | `9` for section                                |
+| id?        | integer | Optional identifier                            |
+| components | array   | 1–3 [Text Display](#text-display) components   |
+| accessory  | object  | A [Button](#button) or [Thumbnail](#thumbnail) |
 
 #### Example
 
@@ -515,7 +544,10 @@ A top-level layout component (message only, requires IS_COMPONENTS_V2) that asso
     {
       "type": 9,
       "components": [
-        { "type": 10, "content": "The game is out now! Check it out on our website." }
+        {
+          "type": 10,
+          "content": "The game is out now! Check it out on our website."
+        }
       ],
       "accessory": {
         "type": 11,
@@ -534,18 +566,18 @@ A content component that renders markdown text. Behavior mirrors the `content` f
 
 #### Text Display Structure
 
-| Field   | Type    | Description                     |
-| ------- | ------- | ------------------------------- |
-| type    | integer | `10` for text display           |
-| id?     | integer | Optional identifier             |
-| content | string  | Markdown text to display        |
+| Field   | Type    | Description              |
+| ------- | ------- | ------------------------ |
+| type    | integer | `10` for text display    |
+| id?     | integer | Optional identifier      |
+| content | string  | Markdown text to display |
 
 #### Interaction Response Structure
 
-| Field | Type    | Description              |
-| ----- | ------- | ------------------------ |
-| type  | integer | `10`                     |
-| id    | integer | Unique identifier         |
+| Field | Type    | Description       |
+| ----- | ------- | ----------------- |
+| type  | integer | `10`              |
+| id    | integer | Unique identifier |
 
 #### Example
 
@@ -554,7 +586,10 @@ A content component that renders markdown text. Behavior mirrors the `content` f
   "flags": 32768,
   "components": [
     { "type": 10, "content": "# Real Game v7.3" },
-    { "type": 10, "content": "Hope you're excited, the update is finally here!\n- Fixed treasure chest bug\n- Improved server stability" },
+    {
+      "type": 10,
+      "content": "Hope you're excited, the update is finally here!\n- Fixed treasure chest bug\n- Improved server stability"
+    },
     { "type": 10, "content": "-# Small print goes here..." }
   ]
 }
@@ -568,13 +603,13 @@ A content component that displays a small image. Only usable as the `accessory` 
 
 #### Thumbnail Structure
 
-| Field        | Type                | Description                                                         |
-| ------------ | ------------------- | ------------------------------------------------------------------- |
-| type         | integer             | `11` for thumbnail                                                  |
-| id?          | integer             | Optional identifier                                                 |
-| media        | unfurled media item | An [unfurled media item](#unfurled-media-item) with a URL           |
-| description? | string              | Alt text; max 1024 characters                                       |
-| spoiler?     | boolean             | Whether to blur the image. Defaults to `false`                      |
+| Field        | Type                | Description                                               |
+| ------------ | ------------------- | --------------------------------------------------------- |
+| type         | integer             | `11` for thumbnail                                        |
+| id?          | integer             | Optional identifier                                       |
+| media        | unfurled media item | An [unfurled media item](#unfurled-media-item) with a URL |
+| description? | string              | Alt text; max 1024 characters                             |
+| spoiler?     | boolean             | Whether to blur the image. Defaults to `false`            |
 
 See [Section](#section) for a usage example.
 
@@ -586,19 +621,19 @@ A top-level content component (message only, requires IS_COMPONENTS_V2) displayi
 
 #### Media Gallery Structure
 
-| Field | Type  | Description                                      |
-| ----- | ----- | ------------------------------------------------ |
-| type  | integer | `12` for media gallery                         |
-| id?   | integer | Optional identifier                            |
+| Field | Type    | Description                                               |
+| ----- | ------- | --------------------------------------------------------- |
+| type  | integer | `12` for media gallery                                    |
+| id?   | integer | Optional identifier                                       |
 | items | array   | 1–10 [media gallery items](#media-gallery-item-structure) |
 
 #### Media Gallery Item Structure
 
-| Field        | Type                | Description                                            |
-| ------------ | ------------------- | ------------------------------------------------------ |
-| media        | unfurled media item | An [unfurled media item](#unfurled-media-item)         |
-| description? | string              | Alt text; max 1024 characters                          |
-| spoiler?     | boolean             | Whether to blur the item. Defaults to `false`          |
+| Field        | Type                | Description                                    |
+| ------------ | ------------------- | ---------------------------------------------- |
+| media        | unfurled media item | An [unfurled media item](#unfurled-media-item) |
+| description? | string              | Alt text; max 1024 characters                  |
+| spoiler?     | boolean             | Whether to blur the item. Defaults to `false`  |
 
 #### Example
 
@@ -606,13 +641,25 @@ A top-level content component (message only, requires IS_COMPONENTS_V2) displayi
 {
   "flags": 32768,
   "components": [
-    { "type": 10, "content": "Live webcam shots as of 18-04-2025 at 12:00 UTC" },
+    {
+      "type": 10,
+      "content": "Live webcam shots as of 18-04-2025 at 12:00 UTC"
+    },
     {
       "type": 12,
       "items": [
-        { "media": { "url": "https://example.com/webcam1.webp" }, "description": "Aerial view of industrial complex." },
-        { "media": { "url": "https://example.com/webcam2.webp" }, "description": "Aerial view of old buildings." },
-        { "media": { "url": "https://example.com/webcam3.webp" }, "description": "Street view of downtown." }
+        {
+          "media": { "url": "https://example.com/webcam1.webp" },
+          "description": "Aerial view of industrial complex."
+        },
+        {
+          "media": { "url": "https://example.com/webcam2.webp" },
+          "description": "Aerial view of old buildings."
+        },
+        {
+          "media": { "url": "https://example.com/webcam3.webp" },
+          "description": "Street view of downtown."
+        }
       ]
     }
   ]
@@ -627,14 +674,14 @@ A top-level content component (message only, requires IS_COMPONENTS_V2) that dis
 
 #### File Structure
 
-| Field    | Type                | Description                                                                                            |
-| -------- | ------------------- | ------------------------------------------------------------------------------------------------------ |
-| type     | integer             | `13` for file                                                                                          |
-| id?      | integer             | Optional identifier                                                                                    |
-| file     | unfurled media item | Only supports `attachment://<filename>` references                                                     |
-| spoiler? | boolean             | Whether to blur the file. Defaults to `false`                                                          |
-| name?    | string              | Read-only; provided by the API in responses                                                            |
-| size?    | integer             | Read-only; file size in bytes; provided by the API in responses                                        |
+| Field    | Type                | Description                                                     |
+| -------- | ------------------- | --------------------------------------------------------------- |
+| type     | integer             | `13` for file                                                   |
+| id?      | integer             | Optional identifier                                             |
+| file     | unfurled media item | Only supports `attachment://<filename>` references              |
+| spoiler? | boolean             | Whether to blur the file. Defaults to `false`                   |
+| name?    | string              | Read-only; provided by the API in responses                     |
+| size?    | integer             | Read-only; file size in bytes; provided by the API in responses |
 
 #### Example
 
@@ -642,7 +689,10 @@ A top-level content component (message only, requires IS_COMPONENTS_V2) that dis
 {
   "flags": 32768,
   "components": [
-    { "type": 10, "content": "# New game version released for testing!\nGrab the game here:" },
+    {
+      "type": 10,
+      "content": "# New game version released for testing!\nGrab the game here:"
+    },
     { "type": 13, "file": { "url": "attachment://game.zip" } },
     { "type": 10, "content": "Latest manual artwork here:" },
     { "type": 13, "file": { "url": "attachment://manual.pdf" } }
@@ -658,12 +708,12 @@ A top-level layout component (message only, requires IS_COMPONENTS_V2) that adds
 
 #### Separator Structure
 
-| Field    | Type    | Description                                                                    |
-| -------- | ------- | ------------------------------------------------------------------------------ |
-| type     | integer | `14` for separator                                                             |
-| id?      | integer | Optional identifier                                                            |
-| divider? | boolean | Whether to show a visual divider line. Defaults to `true`                      |
-| spacing? | integer | Padding size: `1` = small, `2` = large. Defaults to `1`                        |
+| Field    | Type    | Description                                               |
+| -------- | ------- | --------------------------------------------------------- |
+| type     | integer | `14` for separator                                        |
+| id?      | integer | Optional identifier                                       |
+| divider? | boolean | Whether to show a visual divider line. Defaults to `true` |
+| spacing? | integer | Padding size: `1` = small, `2` = large. Defaults to `1`   |
 
 #### Example
 
@@ -686,13 +736,13 @@ A top-level layout component (message only, requires IS_COMPONENTS_V2) that visu
 
 #### Container Structure
 
-| Field         | Type    | Description                                                                   |
-| ------------- | ------- | ----------------------------------------------------------------------------- |
-| type          | integer | `17` for container                                                            |
-| id?           | integer | Optional identifier                                                           |
-| components    | array   | Child components (see below)                                                  |
-| accent_color? | integer | RGB accent color from `0x000000` to `0xFFFFFF`; `null` for none               |
-| spoiler?      | boolean | Whether to blur the container. Defaults to `false`                            |
+| Field         | Type    | Description                                                     |
+| ------------- | ------- | --------------------------------------------------------------- |
+| type          | integer | `17` for container                                              |
+| id?           | integer | Optional identifier                                             |
+| components    | array   | Child components (see below)                                    |
+| accent_color? | integer | RGB accent color from `0x000000` to `0xFFFFFF`; `null` for none |
+| spoiler?      | boolean | Whether to blur the container. Defaults to `false`              |
 
 #### Container Child Components
 
@@ -714,14 +764,32 @@ A top-level layout component (message only, requires IS_COMPONENTS_V2) that visu
       "accent_color": 703487,
       "components": [
         { "type": 10, "content": "# You have encountered a wild coyote!" },
-        { "type": 12, "items": [{ "media": { "url": "https://example.com/coyote.webp" } }] },
+        {
+          "type": 12,
+          "items": [{ "media": { "url": "https://example.com/coyote.webp" } }]
+        },
         { "type": 10, "content": "What would you like to do?" },
         {
           "type": 1,
           "components": [
-            { "type": 2, "custom_id": "pet_coyote", "label": "Pet it!", "style": 1 },
-            { "type": 2, "custom_id": "feed_coyote", "label": "Attempt to feed it", "style": 2 },
-            { "type": 2, "custom_id": "run_away", "label": "Run away!", "style": 4 }
+            {
+              "type": 2,
+              "custom_id": "pet_coyote",
+              "label": "Pet it!",
+              "style": 1
+            },
+            {
+              "type": 2,
+              "custom_id": "feed_coyote",
+              "label": "Attempt to feed it",
+              "style": 2
+            },
+            {
+              "type": 2,
+              "custom_id": "run_away",
+              "label": "Run away!",
+              "style": 4
+            }
           ]
         }
       ]
@@ -740,13 +808,13 @@ A top-level layout component for modals that wraps a single interactive componen
 
 #### Label Structure
 
-| Field        | Type    | Description                                              |
-| ------------ | ------- | -------------------------------------------------------- |
-| type         | integer | `18` for label                                           |
-| id?          | integer | Optional identifier                                      |
-| label        | string  | Label text; max 45 characters                            |
-| description? | string  | Optional description; max 100 characters                 |
-| component    | object  | The wrapped component (see child components below)       |
+| Field        | Type    | Description                                        |
+| ------------ | ------- | -------------------------------------------------- |
+| type         | integer | `18` for label                                     |
+| id?          | integer | Optional identifier                                |
+| label        | string  | Label text; max 45 characters                      |
+| description? | string  | Optional description; max 100 characters           |
+| component    | object  | The wrapped component (see child components below) |
 
 #### Label Child Components
 
@@ -763,10 +831,10 @@ A top-level layout component for modals that wraps a single interactive componen
 
 #### Interaction Response Structure
 
-| Field     | Type    | Description                               |
-| --------- | ------- | ----------------------------------------- |
-| type      | integer | `18`                                      |
-| id        | integer | Unique identifier                         |
+| Field     | Type    | Description                                     |
+| --------- | ------- | ----------------------------------------------- |
+| type      | integer | `18`                                            |
+| id        | integer | Unique identifier                               |
 | component | object  | The interaction response of the child component |
 
 #### Example
@@ -805,25 +873,25 @@ Allows users to upload files in modals. Must be inside a [Label](#label).
 
 #### File Upload Structure
 
-| Field        | Type    | Description                                                                 |
-| ------------ | ------- | --------------------------------------------------------------------------- |
-| type         | integer | `19` for file upload                                                        |
-| id?          | integer | Optional identifier                                                         |
-| custom_id    | string  | 1–100 characters                                                            |
-| min_values?  | integer | Min files to upload; min 0, max 10; defaults to 1. Must be ≥1 if `required` is true. |
-| max_values?  | integer | Max files to upload; max 10; defaults to 1                                  |
-| required?    | boolean | Whether upload is required to submit modal; defaults to `true`              |
+| Field       | Type    | Description                                                                          |
+| ----------- | ------- | ------------------------------------------------------------------------------------ |
+| type        | integer | `19` for file upload                                                                 |
+| id?         | integer | Optional identifier                                                                  |
+| custom_id   | string  | 1–100 characters                                                                     |
+| min_values? | integer | Min files to upload; min 0, max 10; defaults to 1. Must be ≥1 if `required` is true. |
+| max_values? | integer | Max files to upload; max 10; defaults to 1                                           |
+| required?   | boolean | Whether upload is required to submit modal; defaults to `true`                       |
 
 Max file size is determined by the user's upload limit in that channel.
 
 #### Interaction Response Structure
 
-| Field     | Type                | Description                                                       |
-| --------- | ------------------- | ----------------------------------------------------------------- |
-| type      | integer             | `19`                                                              |
-| id        | integer             | Unique identifier                                                 |
-| custom_id | string              | Developer-defined identifier                                      |
-| values    | array of snowflakes | IDs of uploaded files found in `resolved.attachments`             |
+| Field     | Type                | Description                                           |
+| --------- | ------------------- | ----------------------------------------------------- |
+| type      | integer             | `19`                                                  |
+| id        | integer             | Unique identifier                                     |
+| custom_id | string              | Developer-defined identifier                          |
+| values    | array of snowflakes | IDs of uploaded files found in `resolved.attachments` |
 
 #### Example
 
@@ -859,31 +927,31 @@ A modal-only interactive component for selecting exactly one option from a list.
 
 #### Radio Group Structure
 
-| Field     | Type    | Description                                                      |
-| --------- | ------- | ---------------------------------------------------------------- |
-| type      | integer | `21` for radio group                                             |
-| id?       | integer | Optional identifier                                              |
-| custom_id | string  | 1–100 characters                                                 |
-| options   | array   | 2–10 [radio group options](#radio-group-option-structure)        |
-| required? | boolean | Whether a selection is required to submit; defaults to `true`    |
+| Field     | Type    | Description                                                   |
+| --------- | ------- | ------------------------------------------------------------- |
+| type      | integer | `21` for radio group                                          |
+| id?       | integer | Optional identifier                                           |
+| custom_id | string  | 1–100 characters                                              |
+| options   | array   | 2–10 [radio group options](#radio-group-option-structure)     |
+| required? | boolean | Whether a selection is required to submit; defaults to `true` |
 
 #### Radio Group Option Structure
 
-| Field        | Type    | Description                                       |
-| ------------ | ------- | ------------------------------------------------- |
-| value        | string  | Dev-defined value; max 100 characters             |
-| label        | string  | User-facing label; max 100 characters             |
-| description? | string  | Optional description; max 100 characters          |
-| default?     | boolean | Shows option as selected by default               |
+| Field        | Type    | Description                              |
+| ------------ | ------- | ---------------------------------------- |
+| value        | string  | Dev-defined value; max 100 characters    |
+| label        | string  | User-facing label; max 100 characters    |
+| description? | string  | Optional description; max 100 characters |
+| default?     | boolean | Shows option as selected by default      |
 
 #### Interaction Response Structure
 
-| Field     | Type    | Description                                                          |
-| --------- | ------- | -------------------------------------------------------------------- |
-| type      | integer | `21`                                                                 |
-| id        | integer | Unique identifier                                                    |
-| custom_id | string  | Developer-defined identifier                                         |
-| value     | ?string | The selected option's value, or `null` if none selected              |
+| Field     | Type    | Description                                             |
+| --------- | ------- | ------------------------------------------------------- |
+| type      | integer | `21`                                                    |
+| id        | integer | Unique identifier                                       |
+| custom_id | string  | Developer-defined identifier                            |
+| value     | ?string | The selected option's value, or `null` if none selected |
 
 #### Example
 
@@ -902,10 +970,22 @@ A modal-only interactive component for selecting exactly one option from a list.
           "type": 21,
           "custom_id": "class_radio",
           "options": [
-            { "value": "warrior", "label": "Warrior", "description": "Strong and brave" },
-            { "value": "rogue", "label": "Rogue", "description": "Weak and squishy" },
+            {
+              "value": "warrior",
+              "label": "Warrior",
+              "description": "Strong and brave"
+            },
+            {
+              "value": "rogue",
+              "label": "Rogue",
+              "description": "Weak and squishy"
+            },
             { "value": "wizard", "label": "Wizard", "description": "Nerd" },
-            { "value": "bard", "label": "Bard", "description": "Annoys everyone" }
+            {
+              "value": "bard",
+              "label": "Bard",
+              "description": "Annoys everyone"
+            }
           ]
         }
       }
@@ -922,33 +1002,33 @@ A modal-only interactive component for selecting one or many options via checkbo
 
 #### Checkbox Group Structure
 
-| Field        | Type    | Description                                                                            |
-| ------------ | ------- | -------------------------------------------------------------------------------------- |
-| type         | integer | `22` for checkbox group                                                                |
-| id?          | integer | Optional identifier                                                                    |
-| custom_id    | string  | 1–100 characters                                                                       |
-| options      | array   | 1–10 [checkbox group options](#checkbox-group-option-structure)                        |
-| min_values?  | integer | Min items to select; min 0, max 10; defaults to 1. Must be ≥1 if `required` is true.  |
-| max_values?  | integer | Max items to select; min 1, max 10; defaults to number of options                      |
-| required?    | boolean | Whether selecting within the group is required; defaults to `true`                     |
+| Field       | Type    | Description                                                                          |
+| ----------- | ------- | ------------------------------------------------------------------------------------ |
+| type        | integer | `22` for checkbox group                                                              |
+| id?         | integer | Optional identifier                                                                  |
+| custom_id   | string  | 1–100 characters                                                                     |
+| options     | array   | 1–10 [checkbox group options](#checkbox-group-option-structure)                      |
+| min_values? | integer | Min items to select; min 0, max 10; defaults to 1. Must be ≥1 if `required` is true. |
+| max_values? | integer | Max items to select; min 1, max 10; defaults to number of options                    |
+| required?   | boolean | Whether selecting within the group is required; defaults to `true`                   |
 
 #### Checkbox Group Option Structure
 
-| Field        | Type    | Description                                       |
-| ------------ | ------- | ------------------------------------------------- |
-| value        | string  | Dev-defined value; max 100 characters             |
-| label        | string  | User-facing label; max 100 characters             |
-| description? | string  | Optional description; max 100 characters          |
-| default?     | boolean | Shows option as checked by default                |
+| Field        | Type    | Description                              |
+| ------------ | ------- | ---------------------------------------- |
+| value        | string  | Dev-defined value; max 100 characters    |
+| label        | string  | User-facing label; max 100 characters    |
+| description? | string  | Optional description; max 100 characters |
+| default?     | boolean | Shows option as checked by default       |
 
 #### Interaction Response Structure
 
-| Field     | Type             | Description                                                                    |
-| --------- | ---------------- | ------------------------------------------------------------------------------ |
-| type      | integer          | `22`                                                                           |
-| id        | integer          | Unique identifier                                                              |
-| custom_id | string           | Developer-defined identifier                                                   |
-| values    | array of strings | Values of selected options; empty array `[]` if none selected                  |
+| Field     | Type             | Description                                                   |
+| --------- | ---------------- | ------------------------------------------------------------- |
+| type      | integer          | `22`                                                          |
+| id        | integer          | Unique identifier                                             |
+| custom_id | string           | Developer-defined identifier                                  |
+| values    | array of strings | Values of selected options; empty array `[]` if none selected |
 
 #### Example
 
@@ -969,7 +1049,11 @@ A modal-only interactive component for selecting one or many options via checkbo
           "options": [
             { "value": "march-4", "label": "March 4th" },
             { "value": "march-5", "label": "March 5th" },
-            { "value": "march-7", "label": "March 7th", "description": "This is a Saturday" },
+            {
+              "value": "march-7",
+              "label": "March 7th",
+              "description": "This is a Saturday"
+            },
             { "value": "march-9", "label": "March 9th" },
             { "value": "march-10", "label": "March 10th" }
           ]
@@ -990,21 +1074,21 @@ A modal-only single checkbox for yes/no style questions. Must be inside a [Label
 
 #### Checkbox Structure
 
-| Field     | Type    | Description                                       |
-| --------- | ------- | ------------------------------------------------- |
-| type      | integer | `23` for checkbox                                 |
-| id?       | integer | Optional identifier                               |
-| custom_id | string  | 1–100 characters                                  |
-| default?  | boolean | Whether checked by default                        |
+| Field     | Type    | Description                |
+| --------- | ------- | -------------------------- |
+| type      | integer | `23` for checkbox          |
+| id?       | integer | Optional identifier        |
+| custom_id | string  | 1–100 characters           |
+| default?  | boolean | Whether checked by default |
 
 #### Interaction Response Structure
 
-| Field     | Type    | Description                                                      |
-| --------- | ------- | ---------------------------------------------------------------- |
-| type      | integer | `23`                                                             |
-| id        | integer | Unique identifier                                                |
-| custom_id | string  | Developer-defined identifier                                     |
-| value     | boolean | `true` if checked, `false` if unchecked                          |
+| Field     | Type    | Description                             |
+| --------- | ------- | --------------------------------------- |
+| type      | integer | `23`                                    |
+| id        | integer | Unique identifier                       |
+| custom_id | string  | Developer-defined identifier            |
+| value     | boolean | `true` if checked, `false` if unchecked |
 
 #### Example
 
@@ -1037,17 +1121,17 @@ A piece of media referenced by URL, used in Thumbnail, Media Gallery, and File c
 
 #### Unfurled Media Item Structure
 
-| Field                | Type      | Description                                                                                  |
-| -------------------- | --------- | -------------------------------------------------------------------------------------------- |
-| url                  | string    | Supports arbitrary URLs and `attachment://<filename>` references                             |
-| proxy_url?\*         | string    | Proxied URL of the media item                                                                |
-| height?\*            | ?integer  | Height of the media item (if image or video)                                                 |
-| width?\*             | ?integer  | Width of the media item (if image or video)                                                  |
-| placeholder?\*       | string    | Thumbhash placeholder (if image or video)                                                    |
-| placeholder_version?\* | integer | Version of the placeholder                                                                   |
-| content_type?\*      | string    | MIME type of the content                                                                     |
-| flags?\*             | integer   | Bitfield of unfurled media item flags (see below)                                            |
-| attachment_id?\* \*\* | snowflake | ID of the uploaded attachment                                                               |
+| Field                  | Type      | Description                                                      |
+| ---------------------- | --------- | ---------------------------------------------------------------- |
+| url                    | string    | Supports arbitrary URLs and `attachment://<filename>` references |
+| proxy_url?\*           | string    | Proxied URL of the media item                                    |
+| height?\*              | ?integer  | Height of the media item (if image or video)                     |
+| width?\*               | ?integer  | Width of the media item (if image or video)                      |
+| placeholder?\*         | string    | Thumbhash placeholder (if image or video)                        |
+| placeholder_version?\* | integer   | Version of the placeholder                                       |
+| content_type?\*        | string    | MIME type of the content                                         |
+| flags?\*               | integer   | Bitfield of unfurled media item flags (see below)                |
+| attachment_id?\* \*\*  | snowflake | ID of the uploaded attachment                                    |
 
 \* Read-only; provided by the API. \*\* Only present if uploaded as an attachment.
 
@@ -1077,7 +1161,12 @@ Before `IS_COMPONENTS_V2`, components were used alongside `content` and `embeds`
     {
       "type": 1,
       "components": [
-        { "type": 2, "style": 1, "label": "Click Me", "custom_id": "click_me_1" }
+        {
+          "type": 2,
+          "style": 1,
+          "label": "Click Me",
+          "custom_id": "click_me_1"
+        }
       ]
     }
   ]

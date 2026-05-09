@@ -1,6 +1,6 @@
 # Discord: Message Components V2 (for LLMs)
 
-_State: 2026-05-10_
+> _State: 2026-05-10_
 
 This repository contains a markdown documentation file [`docs.md`](/docs.md) designed for use with LLMs.
 
@@ -40,19 +40,33 @@ Do what you want with it, nothing malicious.
     <summary>Google Gemini</summary>
 
 1. **Create a Gem**: Go to Gemini, and start a new Gem.
-2. **Upload the file as knowledge**: Add `docs.md` to your Gem’s knowledge base.
+2. **Upload the file as knowledge**: Add [`docs.md`](./docs.md) to your Gem’s knowledge base.
 3. **Add a single line of instructions**: "You are assisting the user with Components V2. Use the documentation."
 4. **Start chatting**: Gemini anything about Message Components V2 - get instant answers or JSON examples!
 
 </details>
 
 <details>
-    <summary>Claude</summary>
+    <summary>Claude Web</summary>
 
 1. Create a Claude Project.
-2. Download [`docs.md`](/docs.md) and add it to the project as a new file.
-   <img width="1314" height="452" alt="image" src="https://github.com/user-attachments/assets/70b966a0-f0a5-4c17-951f-ced9b0e5da5a" />
-3. Use this project so Claude can reference it every time you chat about CV2 related stuff.
+2. Download [`SKILL.md`](./SKILL.md).
+3. Go to [claude.ai → Customize → Skills](https://claude.ai/customize/skills)
+4. Make sure Code Execution is enabled under [Settings → Capabilities](https://claude.ai/settings/capabilities)
+5. Create a new Skill:
+   ![Create Claude Skill](assets/create-claude-skill.png)
+
+</details>
+
+<details>
+    <summary>Claude Code</summary>
+
+One command to add the skill to your Claude Code:
+
+```bash
+claude skill add --url https://raw.githubusercontent.com/The-LukeZ/ComponentsV2ForLLMs/main/SKILL.md
+```
+
 </details>
 
 ---
