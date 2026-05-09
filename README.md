@@ -47,6 +47,15 @@ Do what you want with it, nothing malicious.
 
 </details>
 
+<details>
+    <summary>Claude</summary>
+
+1. Create a Claude Project.
+2. Download [`docs.md`](/docs.md) and add it to the project as a new file.
+   <img width="1314" height="452" alt="image" src="https://github.com/user-attachments/assets/70b966a0-f0a5-4c17-951f-ced9b0e5da5a" />
+3. Use this project so Claude can reference it every time you chat about CV2 related stuff.
+</details>
+
 ---
 
 > [!NOTE]
