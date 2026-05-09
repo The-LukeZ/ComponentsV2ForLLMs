@@ -1,7 +1,6 @@
 # Discord: Message Components V2 (for LLMs)
 
-> [!WARNING]
-> This is a bit outdated (Sep 3, 2025), you are free to submit a PR which updates it.
+_State: 2026-05-10_
 
 This repository contains a markdown documentation file [`docs.md`](/docs.md) designed for use with LLMs.
 
