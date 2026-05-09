@@ -49,11 +49,10 @@ MIT - see [LICENSE](LICENSE) for details. Do whatever you want with the code, bu
 <details>
     <summary>Claude Web</summary>
 
-1. Create a Claude Project.
-2. Download [`SKILL.md`](./SKILL.md).
-3. Go to [claude.ai → Customize → Skills](https://claude.ai/customize/skills)
-4. Make sure Code Execution is enabled under [Settings → Capabilities](https://claude.ai/settings/capabilities)
-5. Create a new Skill:
+1. Download [`SKILL.md`](./SKILL.md).
+2. Go to [claude.ai → Customize → Skills](https://claude.ai/customize/skills)
+3. Make sure Code Execution is enabled under [Settings → Capabilities](https://claude.ai/settings/capabilities)
+4. Create a new Skill:
    ![Create Claude Skill](assets/create-claude-skill.png)
 
 </details>
