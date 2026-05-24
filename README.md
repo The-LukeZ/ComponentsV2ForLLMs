@@ -60,10 +60,13 @@ MIT - see [LICENSE](LICENSE) for details. Do whatever you want with the code, bu
 <details>
     <summary>Claude Code</summary>
 
-One command to add the skill to your Claude Code:
+Since this is only a skill and not a plugin of some sort, you have to add it by downloading the file and adding it to the global `~/.claude/skills/` directory.  
+Below is the command that does this for you.
 
 ```bash
-claude skill add --url https://raw.githubusercontent.com/The-LukeZ/ComponentsV2ForLLMs/main/SKILL.md
+mkdir -p ~/.claude/skills/discord-components-v2 && \
+curl -sL https://raw.githubusercontent.com/The-LukeZ/ComponentsV2ForLLMs/main/SKILL.md \
+  -o ~/.claude/skills/discord-components-v2/SKILL.md
 ```
 
 </details>
