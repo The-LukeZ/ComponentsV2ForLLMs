@@ -1172,3 +1172,31 @@ Before `IS_COMPONENTS_V2`, components were used alongside `content` and `embeds`
   ]
 }
 ```
+
+---
+
+## Pattern: LLM Tag Pipeline for Components V2
+
+If your bot lets an LLM author Components V2 messages, don't ask it to emit raw Discord JSON. Give it one small custom tag (for example `<cv2 accent="#f38ba8">{spec}</cv2>`) with a tiny spec language, and translate spec → components in the bot. This keeps model output diffable, strips cleanly from the reply text, and caps the blast radius of hallucinated JSON.
+
+A spec language only needs five shapes to cover most agent UIs:
+
+| Spec item | Compiles to |
+| --------- | ----------- |
+| `{ "type": "text", "content": "..." }` | Text Display |
+| `{ "type": "section", "text": "...", "thumbnail": { "url": "..." } }` | Section (+ Thumbnail accessory) |
+| `{ "type": "gallery", "items": [{ "url": "..." }] }` | Media Gallery |
+| `{ "type": "separator" }` | Separator |
+| `{ "type": "buttons", "title": "...", "options": ["..."], "input": "Field" }` | Action Row(s) + Button / "Other…" modal trigger |
+
+Hard-won behaviors to encode in the bot (each one bit on a live agent the hard way):
+
+1. **Send, then wire buttons.** Button `custom_id` needs a unique id per message; the message id is the cheapest one you have. Render the layout without interactive rows, send it, then re-edit the components with `yourprefix:<messageId>:<optionIndex>` rows. Register a small in-memory state map (`messageId → options, input`) so click handlers can validate idempotently.
+2. **V2 messages are standalone.** A V2 message may not carry `content` or `embeds`, and the flag is permanent. Send the agent's visible text as its own message, the V2 block as another. Strip the tag from the reply text before rendering, and handle malformed JSON as a silent skip + a log line, never a crash mid-reply.
+3. **Unlabeled cards die silently.** If you also render classic embeds, remember Discord rejects embeds with zero title/description/images — a generic `<question>` tag that renders as an embed is easy to lose to a 400 Invalid Form Body with no visible symptom.
+4. **`attachment://` resolves against the same message's upload.** Pass the spec's media through the same `multipart/form-data` upload and match by exact filename; cross-message references don't exist.
+5. **Three-way caps.** 40 components/message, ~4000 chars per Text Display, 5 buttons per row. Clamp every field before building; an LLM will happily emit a 30-option button row on request.
+6. **Feed clicks back as a turn.** The interaction handler that feels most "agent-native" is: claim the click (delete the state entry first so double-clicks can't double-fire), acknowledge with an interaction response, then enqueue something like `--- Question answered ---\n[title]: "a chart" (answered by name)` as a new user turn into the same session. The model then *answers* the click like any other message, and charts ensue.
+
+A working implementation lives in [punch-bot/punch](https://github.com/punch-bot/punch) (`src/chat/embeds-questions.js`): `extractV2` → `sendV2`, with parser tests in `test/cv2-tag.test.mjs`. Built on discord.js 14.26+ (`ContainerBuilder`, `SectionBuilder`, `TextDisplayBuilder`, `MediaGalleryBuilder`, `SeparatorBuilder`) with `MessageFlags.IsComponentsV2`.
+
